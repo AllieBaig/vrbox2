@@ -1,0 +1,122 @@
+
+
+<!--
+Purpose: Main HTML entry point for Summer Afternoon Three.js game
+Key features: Three.js setup, responsive canvas, game container, loading screen
+Dependencies: Three.js CDN, custom CSS and JS modules
+Related helpers: css/style.css, js/main.js
+Function names: N/A (HTML structure)
+MIT License: https://github.com/AllieBaig/vrbox/blob/main/LICENSE
+Timestamp: 2025-06-26 10:30 | File: index.html
+-->
+
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Summer Afternoon - Three.js Game</title>
+    <meta name="description" content="A peaceful summer afternoon experience in Three.js">
+
+```
+<!-- Preload key resources -->
+<link rel="preload" href="css/style.css" as="style">
+
+<!-- Stylesheets -->
+<link rel="stylesheet" href="css/style.css">
+
+<!-- Three.js CDN -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+```
+
+</head>
+<body>
+    <!-- Loading Screen -->
+    <div id="loading-screen" class="loading-screen">
+        <div class="loading-content">
+            <div class="loading-spinner"></div>
+            <h2>Loading Summer Afternoon...</h2>
+            <div class="loading-bar">
+                <div id="loading-progress" class="loading-progress"></div>
+            </div>
+            <p id="loading-text">Preparing the scene...</p>
+        </div>
+    </div>
+
+```
+<!-- Game Container -->
+<div id="game-container" class="game-container">
+    <!-- Three.js Canvas will be inserted here -->
+</div>
+
+<!-- UI Overlay -->
+<div id="ui-overlay" class="ui-overlay hidden">
+    <!-- Instructions -->
+    <div class="ui-panel instructions-panel">
+        <h3>Controls</h3>
+        <p><strong>WASD</strong> or <strong>Arrow Keys</strong> - Move</p>
+        <p><strong>Mouse</strong> - Look around</p>
+        <p><strong>Shift</strong> - Run</p>
+        <p><strong>Space</strong> - Jump</p>
+        <p><strong>ESC</strong> - Toggle menu</p>
+    </div>
+
+    <!-- Settings Panel -->
+    <div id="settings-panel" class="ui-panel settings-panel hidden">
+        <h3>Settings</h3>
+        <div class="setting-item">
+            <label for="graphics-quality">Graphics Quality:</label>
+            <select id="graphics-quality">
+                <option value="low">Low</option>
+                <option value="medium" selected>Medium</option>
+                <option value="high">High</option>
+            </select>
+        </div>
+        <div class="setting-item">
+            <label for="audio-volume">Audio Volume:</label>
+            <input type="range" id="audio-volume" min="0" max="100" value="70">
+        </div>
+        <button id="close-settings" class="ui-button">Close</button>
+    </div>
+
+    <!-- Menu Button -->
+    <button id="menu-button" class="ui-button menu-button">☰</button>
+</div>
+
+<!-- Audio Context Warning (for browsers that require user interaction) -->
+<div id="audio-warning" class="audio-warning hidden">
+    <div class="warning-content">
+        <h3>Audio Ready</h3>
+        <p>Click anywhere to enable audio</p>
+    </div>
+</div>
+
+<!-- Performance Stats (Development) -->
+<div id="stats-panel" class="stats-panel hidden">
+    <div class="stat-item">FPS: <span id="fps-counter">60</span></div>
+    <div class="stat-item">Objects: <span id="object-count">0</span></div>
+    <div class="stat-item">Triangles: <span id="triangle-count">0</span></div>
+</div>
+
+<!-- Error Modal -->
+<div id="error-modal" class="error-modal hidden">
+    <div class="error-content">
+        <h3>Oops! Something went wrong</h3>
+        <p id="error-message">An unexpected error occurred.</p>
+        <button id="reload-button" class="ui-button">Reload Game</button>
+    </div>
+</div>
+
+<!-- Main Game Script -->
+<script type="module" src="js/main.js"></script>
+
+<!-- Fallback for browsers without module support -->
+<script nomodule>
+    document.body.innerHTML = '<div style="text-align: center; padding: 50px; font-family: Arial, sans-serif;"><h2>Browser Not Supported</h2><p>This game requires a modern browser that supports ES6 modules.</p></div>';
+</script>
+```
+
+</body>
+</html>
+
