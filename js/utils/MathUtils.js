@@ -1,13 +1,13 @@
 
 
 /*
-Purpose: Mathematical utility functions for Summer Afternoon Three.js game
-Key features: Noise generation, interpolation, random functions, vector math, easing functions
+Purpose: Mathematical utility functions for Summer Afternoon Three.js game - Part 1
+Key features: Noise generation, interpolation, random functions, basic math utilities
 Dependencies: None (pure JavaScript math)
 Related helpers: Environment.js, Character.js, Camera.js
-Function names: noise, lerp, random, clamp, smoothstep, easeInOut, vectorDistance, normalizeAngle
+Function names: noise, lerp, random, clamp, smoothstep, easeInOut, initNoise, fractalNoise
 MIT License: https://github.com/AllieBaig/vrbox/blob/main/LICENSE
-Timestamp: 2025-06-26 11:25 | File: js/utils/MathUtils.js
+Timestamp: 2025-06-26 11:25 | File: js/utils/MathUtils.js (Part 1)
 */
 
 export class MathUtils {
@@ -397,7 +397,20 @@ static shuffle(array) {
     }
     return array;
 }
+```
+/*
+Purpose: Mathematical utility functions for Summer Afternoon Three.js game - Part 2
+Key features: Angle utilities, vector math, easing functions, geometry utilities
+Dependencies: None (pure JavaScript math) - Extends Part 1
+Related helpers: Environment.js, Character.js, Camera.js
+Function names: normalizeAngle, distance2D, easeInOut, pointInCircle, factorial, gcd
+MIT License: https://github.com/AllieBaig/vrbox/blob/main/LICENSE
+Timestamp: 2025-06-26 11:30 | File: js/utils/MathUtils.js (Part 2)
+*/
 
+// NOTE: This is Part 2 of MathUtils.js - Add these methods to the MathUtils class from Part 1
+
+```
 // Angle utilities
 
 /**
@@ -702,6 +715,73 @@ static pointInRect(px, py, rx, ry, rw, rh) {
 }
 
 /**
+ * Calculate line intersection point
+ * @param {number} x1 - First line start X
+ * @param {number} y1 - First line start Y
+ * @param {number} x2 - First line end X
+ * @param {number} y2 - First line end Y
+ * @param {number} x3 - Second line start X
+ * @param {number} y3 - Second line start Y
+ * @param {number} x4 - Second line end X
+ * @param {number} y4 - Second line end Y
+ * @returns {Object|null} Intersection point {x, y} or null if no intersection
+ */
+static lineIntersection(x1, y1, x2, y2, x3, y3, x4, y4) {
+    const denom = (x1 - x2) * (y3 - y4) - (y1 - y2) * (x3 - x4);
+    
+    if (Math.abs(denom) < this.EPSILON) {
+        return null; // Lines are parallel
+    }
+    
+    const t = ((x1 - x3) * (y3 - y4) - (y1 - y3) * (x3 - x4)) / denom;
+    const u = -((x1 - x2) * (y1 - y3) - (y1 - y2) * (x1 - x3)) / denom;
+    
+    if (t >= 0 && t <= 1 && u >= 0 && u <= 1) {
+        return {
+            x: x1 + t * (x2 - x1),
+            y: y1 + t * (y2 - y1)
+        };
+    }
+    
+    return null; // No intersection within line segments
+}
+
+/**
+ * Calculate area of triangle
+ * @param {number} x1 - First vertex X
+ * @param {number} y1 - First vertex Y
+ * @param {number} x2 - Second vertex X
+ * @param {number} y2 - Second vertex Y
+ * @param {number} x3 - Third vertex X
+ * @param {number} y3 - Third vertex Y
+ * @returns {number} Triangle area
+ */
+static triangleArea(x1, y1, x2, y2, x3, y3) {
+    return Math.abs((x1 * (y2 - y3) + x2 * (y3 - y1) + x3 * (y1 - y2)) / 2);
+}
+
+/**
+ * Check if point is inside triangle
+ * @param {number} px - Point X
+ * @param {number} py - Point Y
+ * @param {number} x1 - First vertex X
+ * @param {number} y1 - First vertex Y
+ * @param {number} x2 - Second vertex X
+ * @param {number} y2 - Second vertex Y
+ * @param {number} x3 - Third vertex X
+ * @param {number} y3 - Third vertex Y
+ * @returns {boolean} True if point is inside triangle
+ */
+static pointInTriangle(px, py, x1, y1, x2, y2, x3, y3) {
+    const areaOrig = this.triangleArea(x1, y1, x2, y2, x3, y3);
+    const area1 = this.triangleArea(px, py, x2, y2, x3, y3);
+    const area2 = this.triangleArea(x1, y1, px, py, x3, y3);
+    const area3 = this.triangleArea(x1, y1, x2, y2, px, py);
+    
+    return Math.abs(areaOrig - (area1 + area2 + area3)) < this.EPSILON;
+}
+
+/**
  * Calculate factorial
  * @param {number} n - Number
  * @returns {number} Factorial of n
@@ -747,7 +827,136 @@ static isPrime(n) {
     
     return true;
 }
+
+/**
+ * Generate Fibonacci sequence up to n terms
+ * @param {number} n - Number of terms
+ * @returns {Array<number>} Fibonacci sequence
+ */
+static fibonacci(n) {
+    if (n <= 0) return [];
+    if (n === 1) return [0];
+    if (n === 2) return [0, 1];
+    
+    const fib = [0, 1];
+    for (let i = 2; i < n; i++) {
+        fib[i] = fib[i - 1] + fib[i - 2];
+    }
+    
+    return fib;
+}
+
+/**
+ * Generate Pascal's triangle up to n rows
+ * @param {number} n - Number of rows
+ * @returns {Array<Array<number>>} Pascal's triangle
+ */
+static pascalTriangle(n) {
+    if (n <= 0) return [];
+    
+    const triangle = [[1]];
+    
+    for (let i = 1; i < n; i++) {
+        const row = [1];
+        for (let j = 1; j < i; j++) {
+            row[j] = triangle[i - 1][j - 1] + triangle[i - 1][j];
+        }
+        row.push(1);
+        triangle.push(row);
+    }
+    
+    return triangle;
+}
+
+/**
+ * Calculate binomial coefficient (n choose k)
+ * @param {number} n - Total items
+ * @param {number} k - Items to choose
+ * @returns {number} Binomial coefficient
+ */
+static binomial(n, k) {
+    if (k > n) return 0;
+    if (k === 0 || k === n) return 1;
+    
+    k = Math.min(k, n - k); // Take advantage of symmetry
+    
+    let result = 1;
+    for (let i = 0; i < k; i++) {
+        result = result * (n - i) / (i + 1);
+    }
+    
+    return Math.round(result);
+}
+
+/**
+ * Convert polar coordinates to cartesian
+ * @param {number} radius - Radius
+ * @param {number} angle - Angle in radians
+ * @returns {Object} Cartesian coordinates {x, y}
+ */
+static polarToCartesian(radius, angle) {
+    return {
+        x: radius * Math.cos(angle),
+        y: radius * Math.sin(angle)
+    };
+}
+
+/**
+ * Convert cartesian coordinates to polar
+ * @param {number} x - X coordinate
+ * @param {number} y - Y coordinate
+ * @returns {Object} Polar coordinates {radius, angle}
+ */
+static cartesianToPolar(x, y) {
+    return {
+        radius: Math.sqrt(x * x + y * y),
+        angle: Math.atan2(y, x)
+    };
+}
+
+/**
+ * Calculate centroid of polygon
+ * @param {Array<Object>} points - Array of {x, y} points
+ * @returns {Object} Centroid {x, y}
+ */
+static polygonCentroid(points) {
+    if (points.length === 0) return { x: 0, y: 0 };
+    
+    let area = 0;
+    let cx = 0;
+    let cy = 0;
+    
+    for (let i = 0; i < points.length; i++) {
+        const j = (i + 1) % points.length;
+        const cross = points[i].x * points[j].y - points[j].x * points[i].y;
+        area += cross;
+        cx += (points[i].x + points[j].x) * cross;
+        cy += (points[i].y + points[j].y) * cross;
+    }
+    
+    area *= 0.5;
+    
+    if (Math.abs(area) < this.EPSILON) {
+        // Degenerate polygon, return average of points
+        let sumX = 0, sumY = 0;
+        for (const point of points) {
+            sumX += point.x;
+            sumY += point.y;
+        }
+        return { x: sumX / points.length, y: sumY / points.length };
+    }
+    
+    return {
+        x: cx / (6 * area),
+        y: cy / (6 * area)
+    };
+}
 ```
+
+// End of MathUtils class - Remember to close the class bracket when combining with Part 1
+}
+
+
 
 }
 
