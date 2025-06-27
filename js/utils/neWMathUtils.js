@@ -398,6 +398,565 @@ static shuffle(array) {
     return array;
 }
 ```
+/*
+Purpose: Mathematical utility functions for Summer Afternoon Three.js game - Part 2
+Key features: Angle utilities, vector math, easing functions, geometry utilities
+Dependencies: None (pure JavaScript math) - Extends Part 1
+Related helpers: Environment.js, Character.js, Camera.js
+Function names: normalizeAngle, distance2D, easeInOut, pointInCircle, factorial, gcd
+MIT License: https://github.com/AllieBaig/vrbox/blob/main/LICENSE
+Timestamp: 2025-06-26 11:30 | File: js/utils/MathUtils.js (Part 2)
+*/
+
+// NOTE: This is Part 2 of MathUtils.js - Add these methods to the MathUtils class from Part 1
+
+```
+// Angle utilities
+
+/**
+ * Normalize angle to -PI to PI range
+ * @param {number} angle - Angle in radians
+ * @returns {number} Normalized angle
+ */
+static normalizeAngle(angle) {
+    while (angle > Math.PI) angle -= this.TWO_PI;
+    while (angle < -Math.PI) angle += this.TWO_PI;
+    return angle;
+}
+
+/**
+ * Convert degrees to radians
+ * @param {number} degrees - Angle in degrees
+ * @returns {number} Angle in radians
+ */
+static degToRad(degrees) {
+    return degrees * this.DEG_TO_RAD;
+}
+
+/**
+ * Convert radians to degrees
+ * @param {number} radians - Angle in radians
+ * @returns {number} Angle in degrees
+ */
+static radToDeg(radians) {
+    return radians * this.RAD_TO_DEG;
+}
+
+/**
+ * Lerp between two angles (shortest path)
+ * @param {number} a - Start angle in radians
+ * @param {number} b - End angle in radians
+ * @param {number} t - Interpolation factor (0-1)
+ * @returns {number} Interpolated angle
+ */
+static lerpAngle(a, b, t) {
+    const delta = this.normalizeAngle(b - a);
+    return a + delta * t;
+}
+
+// Vector utilities
+
+/**
+ * Calculate distance between two 2D points
+ * @param {number} x1 - X coordinate of first point
+ * @param {number} y1 - Y coordinate of first point
+ * @param {number} x2 - X coordinate of second point
+ * @param {number} y2 - Y coordinate of second point
+ * @returns {number} Distance
+ */
+static distance2D(x1, y1, x2, y2) {
+    const dx = x2 - x1;
+    const dy = y2 - y1;
+    return Math.sqrt(dx * dx + dy * dy);
+}
+
+/**
+ * Calculate distance between two 3D points
+ * @param {number} x1 - X coordinate of first point
+ * @param {number} y1 - Y coordinate of first point
+ * @param {number} z1 - Z coordinate of first point
+ * @param {number} x2 - X coordinate of second point
+ * @param {number} y2 - Y coordinate of second point
+ * @param {number} z2 - Z coordinate of second point
+ * @returns {number} Distance
+ */
+static distance3D(x1, y1, z1, x2, y2, z2) {
+    const dx = x2 - x1;
+    const dy = y2 - y1;
+    const dz = z2 - z1;
+    return Math.sqrt(dx * dx + dy * dy + dz * dz);
+}
+
+/**
+ * Calculate squared distance (faster when you only need to compare distances)
+ * @param {number} x1 - X coordinate of first point
+ * @param {number} y1 - Y coordinate of first point
+ * @param {number} x2 - X coordinate of second point
+ * @param {number} y2 - Y coordinate of second point
+ * @returns {number} Squared distance
+ */
+static distanceSquared2D(x1, y1, x2, y2) {
+    const dx = x2 - x1;
+    const dy = y2 - y1;
+    return dx * dx + dy * dy;
+}
+
+/**
+ * Normalize a 2D vector
+ * @param {number} x - X component
+ * @param {number} y - Y component
+ * @returns {Object} Normalized vector {x, y}
+ */
+static normalize2D(x, y) {
+    const length = Math.sqrt(x * x + y * y);
+    if (length === 0) return { x: 0, y: 0 };
+    return { x: x / length, y: y / length };
+}
+
+/**
+ * Calculate dot product of two 2D vectors
+ * @param {number} x1 - X component of first vector
+ * @param {number} y1 - Y component of first vector
+ * @param {number} x2 - X component of second vector
+ * @param {number} y2 - Y component of second vector
+ * @returns {number} Dot product
+ */
+static dot2D(x1, y1, x2, y2) {
+    return x1 * x2 + y1 * y2;
+}
+
+/**
+ * Calculate cross product of two 2D vectors (returns scalar)
+ * @param {number} x1 - X component of first vector
+ * @param {number} y1 - Y component of first vector
+ * @param {number} x2 - X component of second vector
+ * @param {number} y2 - Y component of second vector
+ * @returns {number} Cross product (z component)
+ */
+static cross2D(x1, y1, x2, y2) {
+    return x1 * y2 - y1 * x2;
+}
+
+// Easing functions
+
+/**
+ * Ease in (quadratic)
+ * @param {number} t - Time factor (0-1)
+ * @returns {number} Eased value
+ */
+static easeInQuad(t) {
+    return t * t;
+}
+
+/**
+ * Ease out (quadratic)
+ * @param {number} t - Time factor (0-1)
+ * @returns {number} Eased value
+ */
+static easeOutQuad(t) {
+    return t * (2 - t);
+}
+
+/**
+ * Ease in-out (quadratic)
+ * @param {number} t - Time factor (0-1)
+ * @returns {number} Eased value
+ */
+static easeInOutQuad(t) {
+    return t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
+}
+
+/**
+ * Ease in (cubic)
+ * @param {number} t - Time factor (0-1)
+ * @returns {number} Eased value
+ */
+static easeInCubic(t) {
+    return t * t * t;
+}
+
+/**
+ * Ease out (cubic)
+ * @param {number} t - Time factor (0-1)
+ * @returns {number} Eased value
+ */
+static easeOutCubic(t) {
+    return (--t) * t * t + 1;
+}
+
+/**
+ * Ease in-out (cubic)
+ * @param {number} t - Time factor (0-1)
+ * @returns {number} Eased value
+ */
+static easeInOutCubic(t) {
+    return t < 0.5 ? 4 * t * t * t : (t - 1) * (2 * t - 2) * (2 * t - 2) + 1;
+}
+
+/**
+ * Ease in (sine)
+ * @param {number} t - Time factor (0-1)
+ * @returns {number} Eased value
+ */
+static easeInSine(t) {
+    return 1 - Math.cos(t * this.HALF_PI);
+}
+
+/**
+ * Ease out (sine)
+ * @param {number} t - Time factor (0-1)
+ * @returns {number} Eased value
+ */
+static easeOutSine(t) {
+    return Math.sin(t * this.HALF_PI);
+}
+
+/**
+ * Ease in-out (sine)
+ * @param {number} t - Time factor (0-1)
+ * @returns {number} Eased value
+ */
+static easeInOutSine(t) {
+    return -(Math.cos(this.PI * t) - 1) / 2;
+}
+
+/**
+ * Elastic ease out
+ * @param {number} t - Time factor (0-1)
+ * @returns {number} Eased value
+ */
+static easeOutElastic(t) {
+    const c4 = (2 * Math.PI) / 3;
+    return t === 0 ? 0 : t === 1 ? 1 : Math.pow(2, -10 * t) * Math.sin((t * 10 - 0.75) * c4) + 1;
+}
+
+/**
+ * Bounce ease out
+ * @param {number} t - Time factor (0-1)
+ * @returns {number} Eased value
+ */
+static easeOutBounce(t) {
+    const n1 = 7.5625;
+    const d1 = 2.75;
+    
+    if (t < 1 / d1) {
+        return n1 * t * t;
+    } else if (t < 2 / d1) {
+        return n1 * (t -= 1.5 / d1) * t + 0.75;
+    } else if (t < 2.5 / d1) {
+        return n1 * (t -= 2.25 / d1) * t + 0.9375;
+    } else {
+        return n1 * (t -= 2.625 / d1) * t + 0.984375;
+    }
+}
+
+// Utility functions
+
+/**
+ * Check if value is approximately equal (within epsilon)
+ * @param {number} a - First value
+ * @param {number} b - Second value
+ * @param {number} epsilon - Tolerance (default: EPSILON)
+ * @returns {boolean} True if approximately equal
+ */
+static approximately(a, b, epsilon = this.EPSILON) {
+    return Math.abs(a - b) < epsilon;
+}
+
+/**
+ * Round to specified number of decimal places
+ * @param {number} value - Value to round
+ * @param {number} decimals - Number of decimal places
+ * @returns {number} Rounded value
+ */
+static roundTo(value, decimals) {
+    const factor = Math.pow(10, decimals);
+    return Math.round(value * factor) / factor;
+}
+
+/**
+ * Map a value from one range to another
+ * @param {number} value - Input value
+ * @param {number} inMin - Input range minimum
+ * @param {number} inMax - Input range maximum
+ * @param {number} outMin - Output range minimum
+ * @param {number} outMax - Output range maximum
+ * @returns {number} Mapped value
+ */
+static map(value, inMin, inMax, outMin, outMax) {
+    return (value - inMin) * (outMax - outMin) / (inMax - inMin) + outMin;
+}
+
+/**
+ * Check if point is inside circle
+ * @param {number} px - Point X
+ * @param {number} py - Point Y
+ * @param {number} cx - Circle center X
+ * @param {number} cy - Circle center Y
+ * @param {number} radius - Circle radius
+ * @returns {boolean} True if point is inside circle
+ */
+static pointInCircle(px, py, cx, cy, radius) {
+    return this.distanceSquared2D(px, py, cx, cy) <= radius * radius;
+}
+
+/**
+ * Check if point is inside rectangle
+ * @param {number} px - Point X
+ * @param {number} py - Point Y
+ * @param {number} rx - Rectangle X
+ * @param {number} ry - Rectangle Y
+ * @param {number} rw - Rectangle width
+ * @param {number} rh - Rectangle height
+ * @returns {boolean} True if point is inside rectangle
+ */
+static pointInRect(px, py, rx, ry, rw, rh) {
+    return px >= rx && px <= rx + rw && py >= ry && py <= ry + rh;
+}
+
+/**
+ * Calculate line intersection point
+ * @param {number} x1 - First line start X
+ * @param {number} y1 - First line start Y
+ * @param {number} x2 - First line end X
+ * @param {number} y2 - First line end Y
+ * @param {number} x3 - Second line start X
+ * @param {number} y3 - Second line start Y
+ * @param {number} x4 - Second line end X
+ * @param {number} y4 - Second line end Y
+ * @returns {Object|null} Intersection point {x, y} or null if no intersection
+ */
+static lineIntersection(x1, y1, x2, y2, x3, y3, x4, y4) {
+    const denom = (x1 - x2) * (y3 - y4) - (y1 - y2) * (x3 - x4);
+    
+    if (Math.abs(denom) < this.EPSILON) {
+        return null; // Lines are parallel
+    }
+    
+    const t = ((x1 - x3) * (y3 - y4) - (y1 - y3) * (x3 - x4)) / denom;
+    const u = -((x1 - x2) * (y1 - y3) - (y1 - y2) * (x1 - x3)) / denom;
+    
+    if (t >= 0 && t <= 1 && u >= 0 && u <= 1) {
+        return {
+            x: x1 + t * (x2 - x1),
+            y: y1 + t * (y2 - y1)
+        };
+    }
+    
+    return null; // No intersection within line segments
+}
+
+/**
+ * Calculate area of triangle
+ * @param {number} x1 - First vertex X
+ * @param {number} y1 - First vertex Y
+ * @param {number} x2 - Second vertex X
+ * @param {number} y2 - Second vertex Y
+ * @param {number} x3 - Third vertex X
+ * @param {number} y3 - Third vertex Y
+ * @returns {number} Triangle area
+ */
+static triangleArea(x1, y1, x2, y2, x3, y3) {
+    return Math.abs((x1 * (y2 - y3) + x2 * (y3 - y1) + x3 * (y1 - y2)) / 2);
+}
+
+/**
+ * Check if point is inside triangle
+ * @param {number} px - Point X
+ * @param {number} py - Point Y
+ * @param {number} x1 - First vertex X
+ * @param {number} y1 - First vertex Y
+ * @param {number} x2 - Second vertex X
+ * @param {number} y2 - Second vertex Y
+ * @param {number} x3 - Third vertex X
+ * @param {number} y3 - Third vertex Y
+ * @returns {boolean} True if point is inside triangle
+ */
+static pointInTriangle(px, py, x1, y1, x2, y2, x3, y3) {
+    const areaOrig = this.triangleArea(x1, y1, x2, y2, x3, y3);
+    const area1 = this.triangleArea(px, py, x2, y2, x3, y3);
+    const area2 = this.triangleArea(x1, y1, px, py, x3, y3);
+    const area3 = this.triangleArea(x1, y1, x2, y2, px, py);
+    
+    return Math.abs(areaOrig - (area1 + area2 + area3)) < this.EPSILON;
+}
+
+/**
+ * Calculate factorial
+ * @param {number} n - Number
+ * @returns {number} Factorial of n
+ */
+static factorial(n) {
+    if (n <= 1) return 1;
+    return n * this.factorial(n - 1);
+}
+
+/**
+ * Calculate greatest common divisor
+ * @param {number} a - First number
+ * @param {number} b - Second number
+ * @returns {number} GCD
+ */
+static gcd(a, b) {
+    return b === 0 ? a : this.gcd(b, a % b);
+}
+
+/**
+ * Calculate least common multiple
+ * @param {number} a - First number
+ * @param {number} b - Second number
+ * @returns {number} LCM
+ */
+static lcm(a, b) {
+    return Math.abs(a * b) / this.gcd(a, b);
+}
+
+/**
+ * Check if number is prime
+ * @param {number} n - Number to check
+ * @returns {boolean} True if prime
+ */
+static isPrime(n) {
+    if (n <= 1) return false;
+    if (n <= 3) return true;
+    if (n % 2 === 0 || n % 3 === 0) return false;
+    
+    for (let i = 5; i * i <= n; i += 6) {
+        if (n % i === 0 || n % (i + 2) === 0) return false;
+    }
+    
+    return true;
+}
+
+/**
+ * Generate Fibonacci sequence up to n terms
+ * @param {number} n - Number of terms
+ * @returns {Array<number>} Fibonacci sequence
+ */
+static fibonacci(n) {
+    if (n <= 0) return [];
+    if (n === 1) return [0];
+    if (n === 2) return [0, 1];
+    
+    const fib = [0, 1];
+    for (let i = 2; i < n; i++) {
+        fib[i] = fib[i - 1] + fib[i - 2];
+    }
+    
+    return fib;
+}
+
+/**
+ * Generate Pascal's triangle up to n rows
+ * @param {number} n - Number of rows
+ * @returns {Array<Array<number>>} Pascal's triangle
+ */
+static pascalTriangle(n) {
+    if (n <= 0) return [];
+    
+    const triangle = [[1]];
+    
+    for (let i = 1; i < n; i++) {
+        const row = [1];
+        for (let j = 1; j < i; j++) {
+            row[j] = triangle[i - 1][j - 1] + triangle[i - 1][j];
+        }
+        row.push(1);
+        triangle.push(row);
+    }
+    
+    return triangle;
+}
+
+/**
+ * Calculate binomial coefficient (n choose k)
+ * @param {number} n - Total items
+ * @param {number} k - Items to choose
+ * @returns {number} Binomial coefficient
+ */
+static binomial(n, k) {
+    if (k > n) return 0;
+    if (k === 0 || k === n) return 1;
+    
+    k = Math.min(k, n - k); // Take advantage of symmetry
+    
+    let result = 1;
+    for (let i = 0; i < k; i++) {
+        result = result * (n - i) / (i + 1);
+    }
+    
+    return Math.round(result);
+}
+
+/**
+ * Convert polar coordinates to cartesian
+ * @param {number} radius - Radius
+ * @param {number} angle - Angle in radians
+ * @returns {Object} Cartesian coordinates {x, y}
+ */
+static polarToCartesian(radius, angle) {
+    return {
+        x: radius * Math.cos(angle),
+        y: radius * Math.sin(angle)
+    };
+}
+
+/**
+ * Convert cartesian coordinates to polar
+ * @param {number} x - X coordinate
+ * @param {number} y - Y coordinate
+ * @returns {Object} Polar coordinates {radius, angle}
+ */
+static cartesianToPolar(x, y) {
+    return {
+        radius: Math.sqrt(x * x + y * y),
+        angle: Math.atan2(y, x)
+    };
+}
+
+/**
+ * Calculate centroid of polygon
+ * @param {Array<Object>} points - Array of {x, y} points
+ * @returns {Object} Centroid {x, y}
+ */
+static polygonCentroid(points) {
+    if (points.length === 0) return { x: 0, y: 0 };
+    
+    let area = 0;
+    let cx = 0;
+    let cy = 0;
+    
+    for (let i = 0; i < points.length; i++) {
+        const j = (i + 1) % points.length;
+        const cross = points[i].x * points[j].y - points[j].x * points[i].y;
+        area += cross;
+        cx += (points[i].x + points[j].x) * cross;
+        cy += (points[i].y + points[j].y) * cross;
+    }
+    
+    area *= 0.5;
+    
+    if (Math.abs(area) < this.EPSILON) {
+        // Degenerate polygon, return average of points
+        let sumX = 0, sumY = 0;
+        for (const point of points) {
+            sumX += point.x;
+            sumY += point.y;
+        }
+        return { x: sumX / points.length, y: sumY / points.length };
+    }
+    
+    return {
+        x: cx / (6 * area),
+        y: cy / (6 * area)
+    };
+}
+```
+
+// End of MathUtils class - Remember to close the class bracket when combining with Part 1
+}
+
+
 
 }
 
